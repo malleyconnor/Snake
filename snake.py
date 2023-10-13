@@ -95,7 +95,7 @@ class SnakeGame:
         # Change the snakes direction
         def change_direction(self, direction):
             """
-            Changes the snakes direction.
+            Changes the snakes direction (self.direction).
 
             Input:
                 direction (Direction object) - Which direction to change to
@@ -103,74 +103,54 @@ class SnakeGame:
             Returns:
                 None
             """
-            if direction == Direction.UP and self.direction != Direction.DOWN:
-                self.direction = Direction.UP
-            elif direction == Direction.DOWN and self.direction != Direction.UP:
-                self.direction = Direction.DOWN
-            elif direction== Direction.LEFT and self.direction != Direction.RIGHT:
-                self.direction = Direction.LEFT
-            elif direction == Direction.RIGHT and self.direction != Direction.LEFT:
-                self.direction = Direction.RIGHT
+            # YOUR CODE HERE
+            pass
 
         def update_position(self):
             """
-            Updates the position of the snakes head (self.position) based on it's current direction.
+            Updates the position of the snakes head (self.position) based on it's current direction (self.direction).
             """
-            # Updates the position of the snakes head
-            if self.direction == Direction.UP:
-                self.position[1] -= SnakeGame.GRID_SIZE
-            if self.direction == Direction.DOWN:
-                self.position[1] += SnakeGame.GRID_SIZE
-            if self.direction == Direction.LEFT:
-                self.position[0] -= SnakeGame.GRID_SIZE
-            if self.direction == Direction.RIGHT:
-                self.position[0] += SnakeGame.GRID_SIZE
+            # YOUR CODE HERE
+            pass
 
         def extend_head(self):
             """
             Extends the snakes body by adding self.position to the beginning of the queue.
             """
-            # Move the snake forward using the queue
-            self.body.insert(0, list(self.position))
+            # YOUR CODE HERE
 
         def remove_tail(self):
             """
             Removes the snakes tail. This will only be triggered if we are not colliding with a fruit.
             """
-            self.body.pop()
+            # YOUR CODE HERE
+
 
     class Fruit:
+        """
+        Holds the position of the fruit, and a flag indicating whether or not it is currently spawned.
+        """
         def __init__(self):
             # Position of the fruit
             self.position = [random.randint(0, (SnakeGame.RES_X//SnakeGame.GRID_SIZE)-1) * (SnakeGame.GRID_SIZE), 
                              random.randint(0, (SnakeGame.RES_Y//SnakeGame.GRID_SIZE)-1) * (SnakeGame.GRID_SIZE)]
             self.is_spawned = True
 
+        def spawn(self):
+            """
+            Updates the position of the fruit (self.position) to a random position, and sets the fruit.is_spawned flag to True
+            """
+            # YOUR CODE HERE
+            pass
+
     def is_game_over(self):
         """
         Returns true if the position of the snake should trigger the game to be over.
         (e.g. If the snake is out of bounds or its head is colliding with its body)
         """
-        # Game Over conditions
-        if self.snake.position[0] < 0 or self.snake.position[0] > self.RES_X-self.GRID_SIZE:
-            return True
-        if self.snake.position[1] < 0 or self.snake.position[1] > self.RES_Y-self.GRID_SIZE:
-            return True
+        # YOUR CODE HERE
+        pass
 
-        # Touching the snake body
-        for block in self.snake.body[1:]:
-            if self.snake.position[0] == block[0] and self.snake.position[1] == block[1]:
-                return True
-
-    def spawn_fruit(self):
-        """
-        Updates then position of the fruit to a random position, and sets the fruit.is_spawned flag to True
-        """
-        self.fruit.position = [
-            random.randint(0, (self.RES_X//self.GRID_SIZE)-1) * (self.GRID_SIZE),
-            random.randint(0, (self.RES_Y//self.GRID_SIZE)-1) * (self.GRID_SIZE)
-        ]
-        self.fruit.is_spawned = True
 
     def collision_with_fruit(self):
         """
@@ -179,12 +159,8 @@ class SnakeGame:
         Returns:
             True if snakes head matches the position of the fruit, else False
         """
-        # Collision with fruit
-        if self.snake.position[0] == self.fruit.position[0] and \
-            self.snake.position[1] == self.fruit.position[1]:
-            return True
-        else:
-            return False
+        # YOUR CODE HERE
+        pass
 
     # Function to display the start screen
     def draw_start_screen(self):
@@ -379,5 +355,7 @@ class SnakeGame:
             self.clock.tick(100)
 
 
+
+# Initialize and run the game
 game = SnakeGame()
 game.play()
