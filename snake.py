@@ -62,9 +62,7 @@ class SnakeGame:
         self.clock = pygame.time.Clock()
 		
         # Position of the fruit (eating this makes the snake grow)
-        self.fruit = [random.randint(0, (self.RES_X//self.GRID_SIZE)-1) * (self.GRID_SIZE), 
-					  random.randint(0, (self.RES_Y//self.GRID_SIZE)-1) * (self.GRID_SIZE)]
-        self.fruit_is_spawned = True
+        self.fruit = self.Fruit()
 
         # This is our snake object
         self.snake = self.Snake(speed=self.GRID_SIZE)
@@ -113,6 +111,15 @@ class SnakeGame:
                 self.direction = Direction.LEFT
             elif direction == Direction.RIGHT and self.direction != Direction.LEFT:
                 self.direction = Direction.RIGHT
+
+
+    class Fruit:
+        def __init__(self):
+            # Position of the fruit
+            self.position = [random.randint(0, (SnakeGame.RES_X//SnakeGame.GRID_SIZE)-1) * (SnakeGame.GRID_SIZE), 
+                             random.randint(0, (SnakeGame.RES_Y//SnakeGame.GRID_SIZE)-1) * (SnakeGame.GRID_SIZE)]
+            self.is_spawned = True
+
 
     # Function to display the start screen
     def draw_start_screen(self):
@@ -201,10 +208,17 @@ class SnakeGame:
 
     # Draws the fruit on the screen
     def draw_fruit(self):
-        pygame.draw.rect(self.game_window, light_red, pygame.Rect(self.fruit[0], self.fruit[1], self.GRID_SIZE, self.GRID_SIZE))
-        pygame.draw.rect(self.game_window, red, pygame.Rect(self.fruit[0]+1, self.fruit[1]+1, self.GRID_SIZE-2, self.GRID_SIZE-2))
-        pygame.draw.rect(self.game_window, medium_red, pygame.Rect(self.fruit[0]+3, self.fruit[1]+3, self.GRID_SIZE-6, self.GRID_SIZE-6))
-        pygame.draw.rect(self.game_window, dark_red, pygame.Rect(self.fruit[0]+4, self.fruit[1]+4, self.GRID_SIZE-8, self.GRID_SIZE-8))
+        pygame.draw.rect(self.game_window, light_red, pygame.Rect(self.fruit.position[0], self.fruit.position[1], self.GRID_SIZE, self.GRID_SIZE))
+        pygame.draw.rect(self.game_window, red, pygame.Rect(self.fruit.position[0]+1, self.fruit.position[1]+1, self.GRID_SIZE-2, self.GRID_SIZE-2))
+        pygame.draw.rect(self.game_window, medium_red, pygame.Rect(self.fruit.position[0]+3, self.fruit.position[1]+3, self.GRID_SIZE-6, self.GRID_SIZE-6))
+        pygame.draw.rect(self.game_window, dark_red, pygame.Rect(self.fruit.position[0]+4, self.fruit.position[1]+4, self.GRID_SIZE-8, self.GRID_SIZE-8))
+
+    def spawn_fruit(self):
+        self.fruit.position = [
+            random.randint(0, (self.RES_X//self.GRID_SIZE)-1) * (self.GRID_SIZE),
+            random.randint(0, (self.RES_Y//self.GRID_SIZE)-1) * (self.GRID_SIZE)
+        ]
+        self.fruit.is_spawned = True
 
     # Processes pygame events and key presses
     def get_events(self):
@@ -276,20 +290,16 @@ class SnakeGame:
                 self.snake.body.insert(0, list(self.snake.position))
 
                 # Collision with fruit
-                if self.snake.position[0] == self.fruit[0] and self.snake.position[1] == self.fruit[1]:
+                if self.snake.position[0] == self.fruit.position[0] and \
+                   self.snake.position[1] == self.fruit.position[1]:
                     self.score += 10
-                    self.fruit_is_spawned = False
+                    self.fruit.is_spawned = False
                     self.fruit_sound.play()
                 else:
                     self.snake.body.pop()
                     
-                if not self.fruit_is_spawned:
-                    self.fruit = [
-                        random.randint(0, (self.RES_X//self.GRID_SIZE)-1) * (self.GRID_SIZE),
-                        random.randint(0, (self.RES_Y//self.GRID_SIZE)-1) * (self.GRID_SIZE)
-                    ]
-                self.fruit_is_spawned = True
-
+                if not self.fruit.is_spawned:
+                    self.spawn_fruit()
 
                 # Draw the background, the snake, and the fruit
                 self.draw_background()
