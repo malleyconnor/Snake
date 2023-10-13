@@ -126,6 +126,18 @@ class SnakeGame:
             if self.direction == Direction.RIGHT:
                 self.position[0] += SnakeGame.GRID_SIZE
 
+        def extend_head(self):
+            """
+            Extends the snakes body by adding self.position to the beginning of the queue.
+            """
+            # Move the snake forward using the queue
+            self.body.insert(0, list(self.position))
+
+        def remove_tail(self):
+            """
+            Removes the snakes tail. This will only be triggered if we are not colliding with a fruit.
+            """
+
     class Fruit:
         def __init__(self):
             # Position of the fruit
@@ -133,6 +145,45 @@ class SnakeGame:
                              random.randint(0, (SnakeGame.RES_Y//SnakeGame.GRID_SIZE)-1) * (SnakeGame.GRID_SIZE)]
             self.is_spawned = True
 
+    def is_game_over(self):
+        """
+        Returns true if the position of the snake should trigger the game to be over.
+        (e.g. If the snake is out of bounds or its head is colliding with its body)
+        """
+        # Game Over conditions
+        if self.snake.position[0] < 0 or self.snake.position[0] > self.RES_X-self.GRID_SIZE:
+            return True
+        if self.snake.position[1] < 0 or self.snake.position[1] > self.RES_Y-self.GRID_SIZE:
+            return True
+
+        # Touching the snake body
+        for block in self.snake.body[1:]:
+            if self.snake.position[0] == block[0] and self.snake.position[1] == block[1]:
+                return True
+
+    def spawn_fruit(self):
+        """
+        Updates then position of the fruit to a random position, and sets the fruit.is_spawned flag to True
+        """
+        self.fruit.position = [
+            random.randint(0, (self.RES_X//self.GRID_SIZE)-1) * (self.GRID_SIZE),
+            random.randint(0, (self.RES_Y//self.GRID_SIZE)-1) * (self.GRID_SIZE)
+        ]
+        self.fruit.is_spawned = True
+
+    def collision_with_fruit(self):
+        """
+        Checks if the snakes head is currently colliding with the fruit.
+
+        Returns:
+            True if snakes head matches the position of the fruit, else False
+        """
+        # Collision with fruit
+        if self.snake.position[0] == self.fruit.position[0] and \
+            self.snake.position[1] == self.fruit.position[1]:
+            return True
+        else:
+            return False
 
     # Function to display the start screen
     def draw_start_screen(self):
@@ -154,8 +205,11 @@ class SnakeGame:
                 self.game_state = GameState.PLAYING
 
     # displaying Score function
-    def show_score(self, choice, color, font, size):
-
+    def show_score(self):
+        choice = 1 
+        color = white 
+        font = 'times new roman' 
+        size = 20
         # creating font object score_font
         score_font = pygame.font.SysFont(font, size)
         
@@ -200,23 +254,6 @@ class SnakeGame:
         # quit the program
         quit()
 
-    def is_game_over(self):
-        """
-        Returns true if the position of the snake should trigger the game to be over.
-        (e.g. If the snake is out of bounds or its head is colliding with its body)
-        """
-        # Game Over conditions
-        if self.snake.position[0] < 0 or self.snake.position[0] > self.RES_X-self.GRID_SIZE:
-            return True
-        if self.snake.position[1] < 0 or self.snake.position[1] > self.RES_Y-self.GRID_SIZE:
-            return True
-
-        # Touching the snake body
-        for block in self.snake.body[1:]:
-            if self.snake.position[0] == block[0] and self.snake.position[1] == block[1]:
-                return True
-
-
     # Draws the background on the screen
     def draw_background(self):
         self.game_window.fill(self.BACKGROUND_COLOR)
@@ -242,12 +279,6 @@ class SnakeGame:
         pygame.draw.rect(self.game_window, medium_red, pygame.Rect(self.fruit.position[0]+3, self.fruit.position[1]+3, self.GRID_SIZE-6, self.GRID_SIZE-6))
         pygame.draw.rect(self.game_window, dark_red, pygame.Rect(self.fruit.position[0]+4, self.fruit.position[1]+4, self.GRID_SIZE-8, self.GRID_SIZE-8))
 
-    def spawn_fruit(self):
-        self.fruit.position = [
-            random.randint(0, (self.RES_X//self.GRID_SIZE)-1) * (self.GRID_SIZE),
-            random.randint(0, (self.RES_Y//self.GRID_SIZE)-1) * (self.GRID_SIZE)
-        ]
-        self.fruit.is_spawned = True
 
     # Processes pygame events and key presses
     def get_events(self):
@@ -307,18 +338,22 @@ class SnakeGame:
                 # Update the snakes position based on it's current direciton
                 self.snake.update_position()
 
-                # Move the snake forward using the queue
-                self.snake.body.insert(0, list(self.snake.position))
+                # Extend the snakes head, we will remove from the tail
+                # if we end up colliding with a fruit
+                self.snake.extend_head()
 
-                # Collision with fruit
-                if self.snake.position[0] == self.fruit.position[0] and \
-                   self.snake.position[1] == self.fruit.position[1]:
-                    self.score += 10
-                    self.fruit.is_spawned = False
-                    self.fruit_sound.play()
+
+                # If we collide with the fruit, update the game score, despawn the fruit
+                # and play some sounds. Otherwise, we will remove from the tail to keep the
+                # size of the snake the same.
+                if self.collision_with_fruit():
+                   self.score += 10
+                   self.fruit.is_spawned = False
+                   self.fruit_sound.play()
                 else:
-                    self.snake.body.pop()
-                    
+                    self.snake.remove_tail()
+
+                # If the fruit has been de-spawned, spawn a new one. 
                 if not self.fruit.is_spawned:
                     self.spawn_fruit()
 
@@ -327,12 +362,12 @@ class SnakeGame:
                 self.draw_snake()
                 self.draw_fruit()
 
-
+                # Check if we've reached a game over condition
                 if self.is_game_over():
                     self.draw_game_over()
 
-                # displaying score continuously
-                self.show_score(1, white, 'times new roman', 20)
+                # Display the current score
+                self.show_score()
 
                 # Refresh game screen
                 pygame.display.update()
