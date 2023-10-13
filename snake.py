@@ -112,6 +112,19 @@ class SnakeGame:
             elif direction == Direction.RIGHT and self.direction != Direction.LEFT:
                 self.direction = Direction.RIGHT
 
+        def update_position(self):
+            """
+            Updates the position of the snakes head (self.position) based on it's current direction.
+            """
+            # Updates the position of the snakes head
+            if self.direction == Direction.UP:
+                self.position[1] -= SnakeGame.GRID_SIZE
+            if self.direction == Direction.DOWN:
+                self.position[1] += SnakeGame.GRID_SIZE
+            if self.direction == Direction.LEFT:
+                self.position[0] -= SnakeGame.GRID_SIZE
+            if self.direction == Direction.RIGHT:
+                self.position[0] += SnakeGame.GRID_SIZE
 
     class Fruit:
         def __init__(self):
@@ -158,7 +171,7 @@ class SnakeGame:
         self.game_window.blit(score_surface, score_rect)
 			 
     # Display the game over screen
-    def game_over(self):
+    def draw_game_over(self):
         # creating font object my_font
         my_font = pygame.font.SysFont('times new roman', 50)
         
@@ -186,6 +199,22 @@ class SnakeGame:
         
         # quit the program
         quit()
+
+    def is_game_over(self):
+        """
+        Returns true if the position of the snake should trigger the game to be over.
+        (e.g. If the snake is out of bounds or its head is colliding with its body)
+        """
+        # Game Over conditions
+        if self.snake.position[0] < 0 or self.snake.position[0] > self.RES_X-self.GRID_SIZE:
+            return True
+        if self.snake.position[1] < 0 or self.snake.position[1] > self.RES_Y-self.GRID_SIZE:
+            return True
+
+        # Touching the snake body
+        for block in self.snake.body[1:]:
+            if self.snake.position[0] == block[0] and self.snake.position[1] == block[1]:
+                return True
 
 
     # Draws the background on the screen
@@ -275,16 +304,8 @@ class SnakeGame:
                 # Update the snakes direction
                 self.snake.change_direction(direction)
 
-
-                # Updates the position of the snakes head
-                if self.snake.direction == Direction.UP:
-                    self.snake.position[1] -= self.GRID_SIZE
-                if self.snake.direction == Direction.DOWN:
-                    self.snake.position[1] += self.GRID_SIZE
-                if self.snake.direction == Direction.LEFT:
-                    self.snake.position[0] -= self.GRID_SIZE
-                if self.snake.direction == Direction.RIGHT:
-                    self.snake.position[0] += self.GRID_SIZE
+                # Update the snakes position based on it's current direciton
+                self.snake.update_position()
 
                 # Move the snake forward using the queue
                 self.snake.body.insert(0, list(self.snake.position))
@@ -306,16 +327,9 @@ class SnakeGame:
                 self.draw_snake()
                 self.draw_fruit()
 
-                # Game Over conditions
-                if self.snake.position[0] < 0 or self.snake.position[0] > self.RES_X-self.GRID_SIZE:
-                    self.game_over()
-                if self.snake.position[1] < 0 or self.snake.position[1] > self.RES_Y-self.GRID_SIZE:
-                    self.game_over()
 
-                # Touching the snake body
-                for block in self.snake.body[1:]:
-                    if self.snake.position[0] == block[0] and self.snake.position[1] == block[1]:
-                        self.game_over()
+                if self.is_game_over():
+                    self.draw_game_over()
 
                 # displaying score continuously
                 self.show_score(1, white, 'times new roman', 20)
