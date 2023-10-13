@@ -104,14 +104,12 @@ class SnakeGame:
                 None
             """
             # YOUR CODE HERE
-            pass
 
         def update_position(self):
             """
             Updates the position of the snakes head (self.position) based on it's current direction (self.direction).
             """
-            # YOUR CODE HERE
-            pass
+            # YOUR CODE HERE remov
 
         def extend_head(self):
             """
@@ -124,7 +122,6 @@ class SnakeGame:
             Removes the snakes tail. This will only be triggered if we are not colliding with a fruit.
             """
             # YOUR CODE HERE
-
 
     class Fruit:
         """
@@ -141,7 +138,6 @@ class SnakeGame:
             Updates the position of the fruit (self.position) to a random position, and sets the fruit.is_spawned flag to True
             """
             # YOUR CODE HERE
-            pass
 
     def is_game_over(self):
         """
@@ -149,7 +145,6 @@ class SnakeGame:
         (e.g. If the snake is out of bounds or its head is colliding with its body)
         """
         # YOUR CODE HERE
-        pass
 
 
     def collision_with_fruit(self):
@@ -160,7 +155,6 @@ class SnakeGame:
             True if snakes head matches the position of the fruit, else False
         """
         # YOUR CODE HERE
-        pass
 
     # Function to display the start screen
     def draw_start_screen(self):
