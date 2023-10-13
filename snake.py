@@ -146,6 +146,16 @@ class SnakeGame:
                              random.randint(0, (SnakeGame.RES_Y//SnakeGame.GRID_SIZE)-1) * (SnakeGame.GRID_SIZE)]
             self.is_spawned = True
 
+        def spawn(self):
+            """
+            Updates then position of the fruit to a random position, and sets the fruit.is_spawned flag to True
+            """
+            self.position = [
+                random.randint(0, (SnakeGame.RES_X//SnakeGame.GRID_SIZE)-1) * (SnakeGame.GRID_SIZE),
+                random.randint(0, (SnakeGame.RES_Y//SnakeGame.GRID_SIZE)-1) * (SnakeGame.GRID_SIZE)
+            ]
+            self.is_spawned = True
+
     def is_game_over(self):
         """
         Returns true if the position of the snake should trigger the game to be over.
@@ -162,15 +172,6 @@ class SnakeGame:
             if self.snake.position[0] == block[0] and self.snake.position[1] == block[1]:
                 return True
 
-    def spawn_fruit(self):
-        """
-        Updates then position of the fruit to a random position, and sets the fruit.is_spawned flag to True
-        """
-        self.fruit.position = [
-            random.randint(0, (self.RES_X//self.GRID_SIZE)-1) * (self.GRID_SIZE),
-            random.randint(0, (self.RES_Y//self.GRID_SIZE)-1) * (self.GRID_SIZE)
-        ]
-        self.fruit.is_spawned = True
 
     def collision_with_fruit(self):
         """
@@ -357,7 +358,7 @@ class SnakeGame:
 
                 # If the fruit has been de-spawned, spawn a new one. 
                 if not self.fruit.is_spawned:
-                    self.spawn_fruit()
+                    self.fruit.spawn()
 
                 # Draw the background, the snake, and the fruit
                 self.draw_background()
