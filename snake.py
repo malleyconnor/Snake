@@ -137,6 +137,7 @@ class SnakeGame:
             """
             Removes the snakes tail. This will only be triggered if we are not colliding with a fruit.
             """
+            self.body.pop()
 
     class Fruit:
         def __init__(self):
@@ -226,6 +227,7 @@ class SnakeGame:
 			 
     # Display the game over screen
     def draw_game_over(self):
+        self.game_window.fill(self.BACKGROUND_COLOR)
         # creating font object my_font
         my_font = pygame.font.SysFont('times new roman', 50)
         
@@ -364,6 +366,7 @@ class SnakeGame:
 
                 # Check if we've reached a game over condition
                 if self.is_game_over():
+                    self.game_state = GameState.END
                     self.draw_game_over()
 
                 # Display the current score
