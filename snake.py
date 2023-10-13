@@ -333,7 +333,7 @@ class SnakeGame:
 
                 # If the fruit has been de-spawned, spawn a new one. 
                 if not self.fruit.is_spawned:
-                    self.spawn_fruit()
+                    self.fruit.spawn()
 
                 # Draw the background, the snake, and the fruit
                 self.draw_background()
