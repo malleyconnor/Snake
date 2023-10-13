@@ -31,6 +31,12 @@ class Direction(IntEnum):
 	DOWN  = 2
 	LEFT  = 3
 
+# This keeps track of the game state (start screen, playing, game over screen)
+class GameState(IntEnum):
+    START = 0
+    PLAYING = 1
+    END = 2
+
 # The main class for the Snake Game
 class SnakeGame:
     RES_X = 720 # X Resolution
@@ -56,8 +62,8 @@ class SnakeGame:
         self.clock = pygame.time.Clock()
 		
         # Position of the fruit (eating this makes the snake grow)
-        self.fruit = [random.randrange(0, (self.RES_X//self.GRID_SIZE)-1) * self.GRID_SIZE -1, 
-					  random.randrange(0, (self.RES_Y//self.GRID_SIZE)-1) * self.GRID_SIZE -1]
+        self.fruit = [random.randint(0, (self.RES_X//self.GRID_SIZE)-1) * (self.GRID_SIZE), 
+					  random.randint(0, (self.RES_Y//self.GRID_SIZE)-1) * (self.GRID_SIZE)]
         self.fruit_is_spawned = True
 
         # This is our snake object
@@ -70,25 +76,25 @@ class SnakeGame:
         pygame.mixer.init()
         self.fruit_sound = pygame.mixer.Sound('boom.mp3')
         self.last_move = -1
+        self.game_state = GameState.START
 
     class Snake:
         def __init__(self, speed):
             # Speef of snake
             self.speed = speed
 
-            self.body = [[SnakeGame.GRID_SIZE*10-1,  SnakeGame.GRID_SIZE*5-1],
-                         [SnakeGame.GRID_SIZE*9-1,   SnakeGame.GRID_SIZE*5-1],
-                         [SnakeGame.GRID_SIZE*8-1,   SnakeGame.GRID_SIZE*5-1],
-                         [SnakeGame.GRID_SIZE*7-1,   SnakeGame.GRID_SIZE*5-1]]
+            self.body = [[SnakeGame.GRID_SIZE*10,  SnakeGame.GRID_SIZE*5],
+                         [SnakeGame.GRID_SIZE*9,   SnakeGame.GRID_SIZE*5],
+                         [SnakeGame.GRID_SIZE*8,   SnakeGame.GRID_SIZE*5],
+                         [SnakeGame.GRID_SIZE*7,   SnakeGame.GRID_SIZE*5]]
 			
             # Position of the head
-            self.position = [SnakeGame.GRID_SIZE*10-1,  SnakeGame.GRID_SIZE*5-1]
+            self.position = [SnakeGame.GRID_SIZE*10,  SnakeGame.GRID_SIZE*5]
 			
             # Start facing right
             self.direction = Direction.RIGHT
 
         # Change the snakes direction
-
         def change_direction(self, direction):
             """
             Changes the snakes direction.
@@ -108,6 +114,24 @@ class SnakeGame:
             elif direction == Direction.RIGHT and self.direction != Direction.LEFT:
                 self.direction = Direction.RIGHT
 
+    # Function to display the start screen
+    def draw_start_screen(self):
+        self.game_window.fill(self.BACKGROUND_COLOR)
+        my_font = pygame.font.SysFont('times new roman', 50)
+
+        # Create a "Start" button
+        start_button = my_font.render("Hit Enter to Start", True, white)
+        start_button_rect = start_button.get_rect()
+        start_button_rect.center = (self.RES_X // 2, self.RES_Y // 2)
+
+        self.game_window.blit(start_button, start_button_rect)
+
+        pygame.display.update()
+
+        # Check for mouse click to start the game
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                self.game_state = GameState.PLAYING
 
     # displaying Score function
     def show_score(self, choice, color, font, size):
@@ -219,7 +243,11 @@ class SnakeGame:
 
     # Main Function
     def play(self):
-        while True: 
+        while True:
+            if not (self.game_state == GameState.PLAYING):
+                self.draw_start_screen()
+                continue
+
             # Queue up any events
             self.get_events()
 
@@ -257,8 +285,8 @@ class SnakeGame:
                     
                 if not self.fruit_is_spawned:
                     self.fruit = [
-                        random.randint(0, (self.RES_X//self.GRID_SIZE)-1) * self.GRID_SIZE-1,
-                        random.randint(0, (self.RES_Y//self.GRID_SIZE)-1) * self.GRID_SIZE-1
+                        random.randint(0, (self.RES_X//self.GRID_SIZE)-1) * (self.GRID_SIZE),
+                        random.randint(0, (self.RES_Y//self.GRID_SIZE)-1) * (self.GRID_SIZE)
                     ]
                 self.fruit_is_spawned = True
 
